@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Time Tracker</title>
+<link rel="icon" type="image/x-icon" href="favicon.png">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+        body {
+        background-image: url(background.gif);
+        background-repeat: no-repeat;
+        background-attachment: fixed;  
+        background-size: cover;
+        }
+        footer { 
+    position: absolute; 
+    bottom: 0; 
+    left: 0;
+	right: 0; 
+   text-align: center;
+   padding: 20px;
+   color: rgb(0, 0, 0);
+   opacity: 0.9;
+}
+        h1 {
+	font-family: Verdana, Tahoma, sans-serif, sans-serif;
+	font-size: 46px;
+	color: #000000;
+	font-style: Bold;
+  }
+    .container {
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .textbox {
+        margin-bottom: 20px;
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #c81486;
+        color: rgb(255, 255, 255);
+        margin-right: 10px;
+         opacity: 0.9;
+
+    }
+    .timer {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <center>
+        <h1>Job Time Tracker</h1>
+    </center>
+    <input type="text" class="textbox" placeholder="Notes (Optional)">
+    <input type="text" class="textbox" placeholder="Work (Optional)">
+    <div class="timer" id="timer">Timer: 00:00:00</div>
+    <button class="btn" onclick="startTimer()">Start Timer</button>
+    <button class="btn" onclick="endTimer()">End Timer</button>
+</div>
+
+<script>
+    let startTime;
+    let timerInterval;
+
+    function startTimer() {
+        startTime = Date.now();
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+        const elapsedTime = Date.now() - startTime;
+        const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+        const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+        document.getElementById("timer").innerText = `Timer: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function endTimer() {
+        clearInterval(timerInterval);
+        const elapsedTime = Date.now() - startTime;
+        const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+        const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+        const notes = document.querySelector('.container').children[0].value || 'N/A';
+        const work = document.querySelector('.container').children[1].value || 'N/A';
+        const message = `Date: ${new Date().toLocaleDateString()} | Time: ${new Date().toLocaleTimeString()} \nTimer: Hours: ${hours} | Minutes: ${minutes} | Seconds: ${seconds} \nNotes: ${notes} \nWork: ${work}`;
+        sendToDiscord(message);
+    }
+
+    function sendToDiscord(message) {
+        const webhookUrl = 'https://discord.com/api/webhooks/1228953790758125628/6fFm267wt3DJpaBNg2rvipsaKzcjyOPd1ZJqzBu-1QwP_d8fwqVhwxBVXO6As97VRjcR';
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: message }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.error('Error sending message to Database:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Error sending message to Database:', error);
+        });
+    }
+</script>
+<footer>
+    <t>This Is Only For Personal Usage Only! Do Not Use This Service Unless You Are Allowed To! This Is For Personal Use Only!</t>
+</footer>
+</body>
+</html>
